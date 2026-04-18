@@ -1,7 +1,7 @@
 export interface User {
   id: string;
   name: string;
-  role: 'father' | 'son';
+  role: 'qi' | 'domi';
 }
 
 export interface Comment {

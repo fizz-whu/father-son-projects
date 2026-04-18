@@ -1,7 +1,7 @@
 import { createHmac, timingSafeEqual } from 'crypto';
 import { JwtPayload } from './types.js';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'father-son-secret-key-change-in-prod';
+const JWT_SECRET = process.env.JWT_SECRET || 'first-principle-secret-key-change-in-prod';
 
 function base64UrlEncode(str: string): string {
   return Buffer.from(str)

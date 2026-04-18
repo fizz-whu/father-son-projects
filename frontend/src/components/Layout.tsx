@@ -16,7 +16,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       <header className="bg-white shadow-sm">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link to="/" className="text-xl font-bold text-slate-800 hover:text-blue-600">
-            Father & Son Projects
+            First Principle
           </Link>
           <div className="flex items-center gap-4">
             <span className="text-sm text-slate-600">

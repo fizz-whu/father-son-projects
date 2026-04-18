@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import * as cdk from 'aws-cdk-lib';
-import { FatherSonProjectsStack } from '../lib/stack.js';
+import { FatherSonProjectsStack } from '../lib/stack';
 
 const app = new cdk.App();
 new FatherSonProjectsStack(app, 'FatherSonProjectsStack', {

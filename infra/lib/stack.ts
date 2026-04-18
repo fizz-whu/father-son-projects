@@ -47,7 +47,7 @@ export class FatherSonProjectsStack extends cdk.Stack {
         PROJECTS_TABLE: projectsTable.tableName,
         COMMENTS_TABLE: commentsTable.tableName,
         USERS_TABLE: usersTable.tableName,
-        JWT_SECRET: process.env.JWT_SECRET || 'change-this-in-production-please',
+        JWT_SECRET: process.env.JWT_SECRET || 'first-principle-secret-key-change-in-prod',
       },
     });
 
@@ -58,7 +58,7 @@ export class FatherSonProjectsStack extends cdk.Stack {
 
     // API Gateway - REST API (cheapest option)
     const api = new apigateway.RestApi(this, 'Api', {
-      restApiName: 'Father Son Projects API',
+      restApiName: 'First Principle API',
       defaultCorsPreflightOptions: {
         allowOrigins: apigateway.Cors.ALL_ORIGINS,
         allowMethods: apigateway.Cors.ALL_METHODS,

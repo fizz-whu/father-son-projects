@@ -1,7 +1,7 @@
 export interface User {
   id: string;
   name: string;
-  role: 'father' | 'son';
+  role: 'qi' | 'domi';
   passwordHash: string;
 }
 
@@ -26,5 +26,5 @@ export interface Comment {
 export interface JwtPayload {
   userId: string;
   name: string;
-  role: 'father' | 'son';
+  role: 'qi' | 'domi';
 }

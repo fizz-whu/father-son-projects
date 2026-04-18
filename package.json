@@ -11,5 +11,9 @@
     "deploy": "npm run build && cd infra && npm run deploy",
     "destroy": "cd infra && npm run destroy",
     "seed": "node scripts/seed-users.mjs"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.1032.0",
+    "@aws-sdk/lib-dynamodb": "^3.1032.0"
   }
 }
