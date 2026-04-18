@@ -1,0 +1,24 @@
+{
+  "name": "infra",
+  "version": "1.0.0",
+  "description": "Father-Son Projects CDK Infrastructure",
+  "scripts": {
+    "cdk": "cdk",
+    "deploy": "cdk deploy --require-approval never",
+    "destroy": "cdk destroy --force",
+    "synth": "cdk synth"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "aws-cdk-lib": "^2.250.0",
+    "constructs": "^10.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "aws-cdk": "^2.1118.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.3"
+  }
+}
