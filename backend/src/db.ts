@@ -7,7 +7,7 @@ import {
   UpdateCommand,
   ScanCommand,
 } from '@aws-sdk/lib-dynamodb';
-import { Project, Comment, User } from './types.js';
+import { Project, Comment, User, Phase, ProjectSubmission, CommentType, Attachment } from './types.js';
 
 const client = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(client);
@@ -33,9 +33,10 @@ export async function getProjects(): Promise<Project[]> {
     })
   );
   const projects = (result.Items as Project[]) || [];
-  return projects.sort((a, b) =>
-    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
+  // Ensure phases array exists
+  return projects
+    .map(p => ({ ...p, phases: p.phases || [] }))
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 }
 
 export async function getProject(id: string): Promise<Project | null> {
@@ -45,17 +46,23 @@ export async function getProject(id: string): Promise<Project | null> {
       Key: { id },
     })
   );
-  return (result.Item as Project) || null;
+  if (!result.Item) return null;
+  const project = result.Item as Project;
+  return { ...project, phases: project.phases || [] };
 }
 
-export async function createProject(project: Project): Promise<Project> {
+export async function createProject(project: Omit<Project, 'phases'> & { phases?: Phase[] }): Promise<Project> {
+  const fullProject: Project = {
+    ...project,
+    phases: project.phases || [],
+  };
   await docClient.send(
     new PutCommand({
       TableName: PROJECTS_TABLE,
-      Item: project,
+      Item: fullProject,
     })
   );
-  return project;
+  return fullProject;
 }
 
 export async function updateProject(
@@ -86,9 +93,77 @@ export async function updateProject(
       ReturnValues: 'ALL_NEW',
     })
   );
-  return result.Attributes as Project;
+  const project = result.Attributes as Project;
+  return { ...project, phases: project.phases || [] };
 }
 
+// Phase management
+export async function addPhase(projectId: string, phase: Phase): Promise<Project | null> {
+  const project = await getProject(projectId);
+  if (!project) return null;
+
+  const phases = [...project.phases, phase].sort((a, b) => a.order - b.order);
+  return updateProject(projectId, { phases });
+}
+
+export async function updatePhase(projectId: string, phaseId: string, updates: Partial<Phase>): Promise<Project | null> {
+  const project = await getProject(projectId);
+  if (!project) return null;
+
+  const phases = project.phases.map(p =>
+    p.id === phaseId ? { ...p, ...updates } : p
+  );
+  return updateProject(projectId, { phases });
+}
+
+export async function submitPhase(
+  projectId: string,
+  phaseId: string,
+  submission: { id: string; content: string; attachments: Attachment[]; submittedAt: string; submittedBy: string }
+): Promise<Project | null> {
+  const project = await getProject(projectId);
+  if (!project) return null;
+
+  const phases = project.phases.map(p =>
+    p.id === phaseId
+      ? {
+          ...p,
+          status: 'submitted' as const,
+          submission: { ...submission, phaseId },
+        }
+      : p
+  );
+  return updateProject(projectId, { phases });
+}
+
+// Project submission
+export async function submitProject(
+  projectId: string,
+  submission: ProjectSubmission
+): Promise<Project | null> {
+  return updateProject(projectId, { finalSubmission: submission });
+}
+
+export async function addFeedback(
+  projectId: string,
+  feedback: string,
+  grade?: string
+): Promise<Project | null> {
+  const project = await getProject(projectId);
+  if (!project || !project.finalSubmission) return null;
+
+  const updatedSubmission: ProjectSubmission = {
+    ...project.finalSubmission,
+    feedback,
+    grade,
+  };
+  return updateProject(projectId, {
+    finalSubmission: updatedSubmission,
+    status: 'completed',
+  });
+}
+
+// Comments
 export async function getComments(projectId: string): Promise<Comment[]> {
   const result = await docClient.send(
     new QueryCommand({
@@ -113,4 +188,17 @@ export async function createComment(comment: Comment): Promise<Comment> {
     })
   );
   return comment;
+}
+
+export async function markCommentRead(projectId: string, commentId: string): Promise<Comment | null> {
+  const result = await docClient.send(
+    new UpdateCommand({
+      TableName: COMMENTS_TABLE,
+      Key: { projectId, id: commentId },
+      UpdateExpression: 'SET isRead = :isRead',
+      ExpressionAttributeValues: { ':isRead': true },
+      ReturnValues: 'ALL_NEW',
+    })
+  );
+  return result.Attributes as Comment;
 }

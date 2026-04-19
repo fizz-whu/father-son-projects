@@ -1,6 +1,7 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Layout from '../components/Layout';
+import DNATranslator from '../components/DNATranslator';
 import type { Project, Comment } from '../types';
 import { getProject, getComments, createComment, updateProject } from '../api';
 import { useAuth } from '../context/AuthContext';
@@ -126,6 +127,8 @@ export default function ProjectDetail() {
           Created {formatDate(project.createdAt)}
         </div>
       </div>
+
+      <DNATranslator />
 
       <div className="bg-white rounded-lg shadow">
         <div className="p-4 border-b border-slate-200">
