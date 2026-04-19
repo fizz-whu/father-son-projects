@@ -125,7 +125,7 @@ export default function Projects() {
               <div className="flex items-start justify-between">
                 <div>
                   <h2 className="text-lg font-semibold text-slate-800">{project.title}</h2>
-                  <p className="text-slate-600 mt-1">{project.description}</p>
+                  <p className="text-slate-600 mt-1 whitespace-pre-wrap line-clamp-3">{project.description}</p>
                 </div>
                 <span
                   className={`px-2 py-1 text-xs rounded ${

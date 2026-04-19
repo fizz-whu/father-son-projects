@@ -109,7 +109,7 @@ export default function ProjectDetail() {
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-2xl font-bold text-slate-800">{project.title}</h1>
-            <p className="text-slate-600 mt-2">{project.description}</p>
+            <p className="text-slate-600 mt-2 whitespace-pre-wrap">{project.description}</p>
           </div>
           <button
             onClick={toggleStatus}
